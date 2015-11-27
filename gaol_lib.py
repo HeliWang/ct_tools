@@ -1,6 +1,10 @@
 import json
+import urllib
 import urllib2
 import ssl
+import base64
+
+from lib import *
 
 class sslparameters:
     sslcontext = None
@@ -19,6 +23,11 @@ def get_sth(baseurl):
     result = urlopen(baseurl + "gaol/v1/get-sth").read()
     return json.loads(result)
 
+def get_entries(baseurl, start, end):
+    params = urllib.urlencode({"start":start, "end":end})
+    # try:
+    result = urlopen(baseurl + "gaol/v1/get-entries?" + params).read()
+    return json.loads(result)
 
 def get_consistency_proof(baseurl, tree_size1, tree_size2):
     # try:
@@ -30,3 +39,8 @@ def get_consistency_proof(baseurl, tree_size1, tree_size2):
     # except urllib2.HTTPError, e:
     #     print "ERROR:", e.read()
         # sys.exit(1)
+
+def extract_original_entry(entry):
+    leaf_input =  base64.decodestring(entry["leaf_input"])
+    (data_blob, timestamp, issuer_key_hash) = unpack_mtl(leaf_input)
+    return (data_blob, timestamp)

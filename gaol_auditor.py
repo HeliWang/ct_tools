@@ -53,81 +53,10 @@ class ctlog:
         self.log("Starting monitor")
 
 
-    # def incremental_build(self):
-    #     # Keeps state current during build, partial builds are possible.
-    #     try:
-    #         self.sth = get_sth(self.url)
-    #     except Exception, e:
-    #         self.log("Failed to fetch STH. " + str(e))
-    #         return
-
-    #     if self.build:
-    #         start_size = self.entries
-    #         try:
-    #             while self.entries < self.sth["tree_size"]:
-    #                 tmp_size = self.entries
-    #                 try:    
-    #                     self.subtree, self.entries = self.fetch_and_increment_subtree(self.entries, self.sth["tree_size"] -1, self.url, self.subtree)
-    #                 except Exception, e:
-    #                     self.log(ERROR_STR + "Failed fetch and increment tree. Current Size: " + str(self.entries) + " Sth: " + str(self.sth) + " Error: " + str(e))
-    #                     self.rollback()
-    #                     return
-
-    #                 if tmp_size != self.entries:
-    #                     self.log("Got entries " + str(tmp_size) + " to " \
-    #                     + str(self.entries -1 ) + " of " + str(self.sth["tree_size"]-1))
-
-    #             if self.entries != start_size:
-    #                 if verify_subtree(self.sth, self.subtree, self.url):
-    #                     pass
-    #                 else:
-    #                     self.log(ERROR_STR + "Failed to verify newly built subtree!")
-    #                     self.rollback()
-    #         except Exception, e:
-    #             # print "Failed incremental build for " + self.name
-    #             self.log(ERROR_STR + "Failed incremental build. Error: " + str(e))
-    #             self.rollback()
-
-    # def save_state(self):
-    #     self.saved_sth = self.sth
-    #     self.saved_subtree = self.subtree
-    #     self.saved_entries = self.entries
-
-    # def rollback(self):
-    #     if self.saved_entries and self.saved_subtree and self.saved_sth:
-    #         self.log("Rolling back to last saved state")
-    #         self.sth = self.saved_sth
-    #         self.subtree = self.saved_subtree
-    #         self.entries = self.saved_entries
-    #     else:
-    #         self.log(ERROR_STR + "Could not roll back, no saved state found!")
-
-    # def fetch_and_increment_subtree(self, first, last, url, subtree =[[]]):
-    #     new_leafs = []
-    #     if first <= last:
-    #         entries = get_entries(url, first, last)["entries"]
-    #         tmp_cert_data = []
-    #         for item in entries:
-    #             tmp_data = check_domain(item, url)
-    #             entry_hash = get_leaf_hash(base64.b64decode(item["leaf_input"]))
-    #             if tmp_data:
-    #                 tmp_data["leaf_hash"] = base64.b64encode(entry_hash)
-    #                 tmp_cert_data.append(tmp_data)
-    #             new_leafs.append(entry_hash)
-    #             monitor_issuer(tmp_data)
-    #         if self.dbdir:
-    #             db_add_certs(self.dbdir, tmp_cert_data)
-    #         if CONFIG.DEFAULT_CERT_FILE:
-    #             append_file(CONFIG.DEFAULT_CERT_FILE, tmp_cert_data)
-    #         subtree = reduce_tree(new_leafs, subtree)
-    #     return subtree, len(new_leafs) + first
 
     def to_dict(self):
         d = {}
-        # d["entries"] = self.entries
-        # d["subtree"] = encode_tree(self.subtree)
         d["sth"] = self.sth
-        # d["fe_ips"] = self.fe_ips
         return d
 
     def save(self):
@@ -140,14 +69,7 @@ class ctlog:
             f = open(self.savefile)
             s = f.read()
             d = json.loads(s)
-            # self.subtree = decode_tree(d["subtree"])
             self.sth = d["sth"]
-            # self.entries = d["entries"]
-
-            # if "fe_ips" in d:
-            #     self.fe_ips = d["fe_ips"]
-            # else:
-            #     self.fe_ips = {}
 
         except IOError, e:
             if e.errno == errno.ENOENT:
@@ -189,14 +111,11 @@ class ctlog:
             if new["tree_size"] == old["tree_size"]:
                 if old["sha256_root_hash"] != new["sha256_root_hash"]:
                     self.log(ERROR_STR + "New root hash for same tree size! Old:" + str(old) + " New:" + str(new))
-                    # self.rollback()
             elif new["tree_size"] < old["tree_size"]:
                 self.log(ERROR_STR + "New tree is smaller than old tree! Old:" + str(old) + " New:" + str(new))
-                # self.rollback()
 
             if new["timestamp"] < old["timestamp"]:
                 self.log(ERROR_STR + "Regression in timestamps! Old:" + str(old) + " New:" + str(new))
-                # self.rollback()
             else:
                 age = time.time() - new["timestamp"]/1000
                 sth_time = time_str(new["timestamp"])
@@ -213,7 +132,6 @@ class ctlog:
                     self.log(s)
         except Exception, e:
             self.log(ERROR_STR + "Failed to verify progress! Old:" + str(old) + " New:" + str(new) + " Exception: " + str(e))
-            # self.rollback()
 
     def verify_consistency(self, old):
         new = self.sth
@@ -228,21 +146,16 @@ class ctlog:
                 if old["sha256_root_hash"] != str(base64.b64encode(res[0])):
                     self.log(ERROR_STR + "Verification of consistency for old hash failed! Old:" \
                         + str(old) + " New:" + str(new) + " Proof:" + str(consistency_proof))
-                    # self.rollback()
                 elif new["sha256_root_hash"] != str(base64.b64encode(res[1])):
                     self.log(ERROR_STR + "Verification of consistency for new hash failed! Old:" \
                         + str(old) + " New:" + str(new) + " Proof:" + str(consistency_proof))
-                    # self.rollback()
 
         except Exception, e:
             self.log(ERROR_STR + "Could not verify consistency! " + " Old:" + str(old) + " New:" + str(new) + " Error:"  + str(e))
-            # self.rollback()
 
 
 
 def main(args):
-    # monitored_domains = setup_domain_monitoring()
-
     # Create logs
     logs = []
     try:
@@ -267,7 +180,6 @@ def main(args):
                 if old_sth and old_sth["timestamp"] != log.sth["timestamp"]:
                     log.verify_progress(old_sth)        
                     log.verify_consistency(old_sth)      # Does rollback on critical fail
-                    # log.incremental_build()              # Does rollback on critical fail
                     pass
             time.sleep(CONFIG.INTERVAL)
 

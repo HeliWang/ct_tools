@@ -138,3 +138,16 @@ def combine_two_hashes((path1, hash1), (path2, hash2), treesize):
         newhash = internal_hash((hash2, hash1))
 
     return (node_above(path1), newhash)
+
+def unpack_mtl(merkle_tree_leaf):
+    version = merkle_tree_leaf[0:1]
+    leaf_type = merkle_tree_leaf[1:2]
+    timestamped_entry = merkle_tree_leaf[2:]
+    (timestamp, entry_type) = struct.unpack(">QH", timestamped_entry[0:10])
+    if entry_type == 0:
+        issuer_key_hash = None
+        (leafcert, rest_entry) = unpack_tls_array(timestamped_entry[10:], 3)
+    elif entry_type == 1:
+        issuer_key_hash = timestamped_entry[10:42]
+        (leafcert, rest_entry) = unpack_tls_array(timestamped_entry[42:], 3)
+    return (leafcert, timestamp, issuer_key_hash)
