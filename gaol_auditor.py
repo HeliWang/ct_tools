@@ -141,11 +141,11 @@ class ctlog:
                 decoded_consistency_proof = []
                 for item in consistency_proof:
                     decoded_consistency_proof.append(base64.b64decode(item))
-                res = verify_consistency_proof(decoded_consistency_proof, old["tree_size"], new["tree_size"], old["sha256_root_hash"])
+                res = verify_consistency_proof(decoded_consistency_proof, old["tree_size"], new["tree_size"], base64.b64decode(old["sha256_root_hash"]))
                 
                 if old["sha256_root_hash"] != str(base64.b64encode(res[0])):
                     self.log(ERROR_STR + "Verification of consistency for old hash failed! Old:" \
-                        + str(old) + " New:" + str(new) + " Calculated:" + str(base64.b64encode(res[0])\
+                        + str(old) + " New:" + str(new) + " Calculated:" + str(base64.b64encode(res[0]))\
                         + " Proof:" + str(consistency_proof))
                 elif new["sha256_root_hash"] != str(base64.b64encode(res[1])):
                     self.log(ERROR_STR + "Verification of consistency for new hash failed! Old:" \

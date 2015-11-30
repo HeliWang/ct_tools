@@ -23,6 +23,6 @@ def test_consistency_proof(url, idx1, idx2):
 
 if __name__ == '__main__':
     url = CTLOGS[0]["url"]
-    test_get_entry(url,4)
-    # test_submission(url, "42")
+    # test_get_entry(url,4)
+    test_submission(url, "Progress (n.): The process through which the Internet has evolved from smart people in front of dumb terminals to dumb people in front of smart terminals.")
     # test_consistency_proof(url, 2, 3)
