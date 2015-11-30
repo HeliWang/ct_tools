@@ -35,7 +35,29 @@ def merkle_height(n):
         return 1
     return bits(n - 1)
 
+def node_above((pathp, pathl), levels=1):
+    return (pathp >> levels, pathl + levels)
 
+def node_even((pathp, pathl)):
+    return pathp & 1 == 0
+
+def node_odd((pathp, pathl)):
+    return pathp & 1 == 1
+
+def node_lower((path1p, path1l), (path2p, path2l)):
+    return path1l < path2l
+
+def node_higher((path1p, path1l), (path2p, path2l)):
+    return path1l > path2l
+
+def node_level((path1p, path1l)):
+    return path1l
+
+def node_outside((path1p, path1l), (path2p, path2l)):
+    assert path1l == path2l
+    return path1p > path2p
+
+    
 def time_str(ts = None):
     if ts is None:
         return datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
