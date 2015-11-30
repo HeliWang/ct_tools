@@ -145,7 +145,8 @@ class ctlog:
                 
                 if old["sha256_root_hash"] != str(base64.b64encode(res[0])):
                     self.log(ERROR_STR + "Verification of consistency for old hash failed! Old:" \
-                        + str(old) + " New:" + str(new) + " Proof:" + str(consistency_proof))
+                        + str(old) + " New:" + str(new) + " Calculated:" + str(base64.b64encode(res[0])\
+                        + " Proof:" + str(consistency_proof))
                 elif new["sha256_root_hash"] != str(base64.b64encode(res[1])):
                     self.log(ERROR_STR + "Verification of consistency for new hash failed! Old:" \
                         + str(old) + " New:" + str(new) + " Proof:" + str(consistency_proof))

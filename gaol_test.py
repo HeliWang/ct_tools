@@ -23,6 +23,6 @@ def test_consistency_proof(url, idx1, idx2):
 
 if __name__ == '__main__':
     url = CTLOGS[0]["url"]
-    # test_get_entry(url,2)
-    # test_submission(url, "When in trouble or in doubt, run in circles, scream and shout.  -- Cory Doctorow")
-    test_consistency_proof(url, 2, 3)
+    test_get_entry(url,4)
+    # test_submission(url, "42")
+    # test_consistency_proof(url, 2, 3)
