@@ -34,7 +34,7 @@ def get_consistency_proof(baseurl, tree_size1, tree_size2):
         params = urllib.urlencode({"first":tree_size1,
                                    "second":tree_size2})
         result = \
-          urlopen(baseurl + "ct/v1/get-sth-consistency?" + params).read()
+          urlopen(baseurl + "gaol/v1/get-sth-consistency?" + params).read()
         return json.loads(result)["consistency"]
     # except urllib2.HTTPError, e:
     #     print "ERROR:", e.read()
@@ -44,3 +44,23 @@ def extract_original_entry(entry):
     leaf_input =  base64.decodestring(entry["leaf_input"])
     (data_blob, timestamp, issuer_key_hash) = unpack_mtl(leaf_input)
     return (data_blob, timestamp)
+
+def make_blob(data):
+	return base64.b64encode(data)
+
+def add_blob(baseurl, blob):
+    try:
+        result = urlopen(baseurl + "gaol/v1/add-blob", json.dumps({"blob" : blob})).read()
+        return json.loads(result)
+    except urllib2.HTTPError, e:
+        return "ERROR " + str(e.code) + " : " + e.read()
+        # if e.code == 400:
+        return None
+        # sys.exit(1)
+    except ValueError, e:
+        print "==== FAILED REQUEST ===="
+        print submission
+        print "======= RESPONSE ======="
+        print result
+        print "========================"
+        raise e
