@@ -30,6 +30,12 @@ def bits(n):
         p += 1
     return p
 
+def merkle_height(n):
+    if n == 0:
+        return 1
+    return bits(n - 1)
+
+
 def time_str(ts = None):
     if ts is None:
         return datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
