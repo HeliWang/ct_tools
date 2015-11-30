@@ -57,6 +57,16 @@ def node_outside((path1p, path1l), (path2p, path2l)):
     assert path1l == path2l
     return path1p > path2p
 
+def internal_hash(pair):
+    if len(pair) == 1:
+        return pair[0]
+    else:
+        hash = hashlib.sha256()
+        hash.update(struct.pack(">b", 1))
+        hash.update(pair[0])
+        hash.update(pair[1])
+        digest = hash.digest()
+        return digest
     
 def time_str(ts = None):
     if ts is None:
