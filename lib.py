@@ -23,6 +23,13 @@ class UTC(datetime.tzinfo):
     def dst(self, dt):
         return datetime.timedelta(0)
 
+def bits(n):
+    p = 0
+    while n > 0:
+        n >>= 1
+        p += 1
+    return p
+
 def time_str(ts = None):
     if ts is None:
         return datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
