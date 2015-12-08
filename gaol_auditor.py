@@ -7,6 +7,7 @@ import datetime
 import base64
 import argparse
 import errno
+import subprocess
 
 import json
 
@@ -29,6 +30,13 @@ else:
     ERROR_STR = "(local)ERROR: "
     sys.exit()
 
+def email(s):
+    for addr in CONFIG.EMAIL_ADDR:
+        p = subprocess.Popen(
+        ["mail", "-s", CONFIG.EMAIL_SUBJECT, addr],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    p.communicate(s)
 
 
 class ctlog:
@@ -82,6 +90,7 @@ class ctlog:
         with open(self.logfile, 'a') as f:
             f.write(s + "\n")
             f.close()
+        email(s)
 
     def update_sth(self):
         try:

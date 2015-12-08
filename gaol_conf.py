@@ -8,6 +8,12 @@ OUTPUT_DIR = "output/"
 
 # Some strings
 ERROR_STR = "ERROR: "
+EMAIL_SUBJECT = "GAOL"
+
+# Email addresses for error messages 
+EMAIL_ADDR = [
+"josef@nordu.net",
+]
 
 # CT logs and associated keys
 CTLOGS = [
